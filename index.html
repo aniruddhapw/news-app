@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>News Headlines</title>
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+    .article {
+        margin-top: 20px;
+      margin-bottom: 1rem;
+      margin-left: auto;
+      margin-right: auto;
+      width: 600px;
+    }
+    .title {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    .description {
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+    .image {
+      width: 50%;
+      margin-bottom: 0.5rem;
+    }
+    .heading{
+        margin-left: auto;
+        margin-right: auto;
+        width: fit-content;
+
+    }
+  </style>
+</head>
+<body>
+    <div class="heading">
+        <h1>Top Headlines</h1>
+
+        <label for="country-select">Select a country:</label>
+        <select id="country-select">
+          <option value="us">United States</option>
+          <option value="in">India</option>
+        </select>
+    </div>
+ 
+
+  <div id="articles"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const API_KEY = 'dae7674a7df2464595b63c10e2342c70';
+    const API_URL = 'https://newsapi.org/v2/top-headlines';
+
+    const articlesContainer = document.getElementById('articles');
+    const countrySelect = document.getElementById('country-select');
+
+    countrySelect.addEventListener('change', () => {
+      const country = countrySelect.value;
+
+      axios.get(API_URL, {
+        params: {
+          country: country,
+          apiKey: API_KEY
+        }
+      })
+      .then(response => {
+          articlesContainer.innerHTML = '';
+
+          const articles = response.data.articles;
+          articles.forEach(article => {
+            const articleElement = document.createElement('div');
+            articleElement.classList.add('article');
+
+            const titleElement = document.createElement('div');
+            titleElement.classList.add('title');
+            titleElement.textContent = article.title;
+            articleElement.appendChild(titleElement);
+
+            if (article.urlToImage) {
+              const imageElement = document.createElement('img');
+              imageElement.classList.add('image');
+              imageElement.setAttribute('src', article.urlToImage);
+              articleElement.appendChild(imageElement);
+            }
+
+            const descriptionElement = document.createElement('div');
+            descriptionElement.classList.add('description');
+            descriptionElement.textContent = article.description;
+            articleElement.appendChild(descriptionElement);
+
+            const readMoreElement = document.createElement('a');
+            readMoreElement.classList.add('read-more');
+            readMoreElement.textContent = 'Read More';
+            readMoreElement.setAttribute('href', article.url);
+            articleElement.appendChild(readMoreElement);
+
+            articlesContainer.appendChild(articleElement);
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    });
+  </script>
+</body>
+</html>
